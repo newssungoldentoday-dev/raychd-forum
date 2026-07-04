@@ -1,0 +1,56 @@
+version: "3.9"
+
+# Ray Chad Forum — docker-compose.yml
+#
+# Quick start:
+#   cp .env.example .env   # edit values first
+#   docker compose up -d
+#
+# To link with an existing raychd IRC stack so the bridge bot can post
+# into your channels, set NETWORK_MODE=external below and point
+# RAYCHD_NETWORK_NAME at the network raychd's compose file created
+# (usually "<raychd-project-folder>_default").
+
+services:
+  forum:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: raychd-forum:latest
+    container_name: raychd-forum
+    restart: unless-stopped
+    ports:
+      - "${FORUM_PORT:-8080}:8080"
+    environment:
+      FORUM_DOMAIN: ${FORUM_DOMAIN:-localhost}
+      FORUM_PORT: 8080
+      NODE_ENV: production
+      DATABASE_PATH: /data/forum.sqlite
+      RAYCHD_IRC_HOST: ${RAYCHD_IRC_HOST:-}
+      RAYCHD_IRC_PORT: ${RAYCHD_IRC_PORT:-6697}
+      RAYCHD_SHARED_SECRET: ${RAYCHD_SHARED_SECRET:-}
+      BRIDGE_CHANNELS: ${BRIDGE_CHANNELS:-}
+    volumes:
+      - forum-data:/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/healthz', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - default
+      - raychd_bridge
+
+volumes:
+  forum-data:
+    driver: local
+
+networks:
+  default: {}
+  # Set this to the raychd stack's network so the IRC bridge bot can
+  # reach it directly (e.g. "raychd_default"). Leave as a standalone
+  # bridge network if you're running the forum on its own.
+  raychd_bridge:
+    name: ${RAYCHD_NETWORK_NAME:-raychd_bridge}
+    external: ${RAYCHD_NETWORK_EXTERNAL:-false}
