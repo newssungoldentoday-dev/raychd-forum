@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ray Chad Forum — Threaded Discussion</title>
+<style>
+  :root{
+    --bg:#0d0f0d;
+    --bg-raised:#141714;
+    --line:#22271f;
+    --text:#d7ddd2;
+    --text-dim:#7a8574;
+    --accent:#7fd66b;
+    --accent-dim:#4f7a44;
+    --amber:#e0b24a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono','SF Mono',ui-monospace,Menlo,Consolas,monospace;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px;}
+
+  /* nav */
+  nav{
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(13,15,13,0.92);
+    backdrop-filter:blur(6px);
+    z-index:10;
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;}
+  .brand{font-weight:700;color:var(--text);font-size:15px;letter-spacing:0.02em;}
+  .brand .cursor{display:inline-block;width:8px;height:14px;background:var(--accent);margin-left:2px;
+    animation:blink 1.1s steps(1) infinite;vertical-align:-2px;}
+  @keyframes blink{50%{opacity:0;}}
+  .navlinks{display:flex;gap:22px;font-size:13px;color:var(--text-dim);}
+  .navlinks a{color:var(--text-dim);}
+  .navlinks a:hover{color:var(--accent);}
+  @media (max-width:640px){.navlinks{display:none;}}
+
+  /* hero */
+  .hero{padding:64px 0 40px;border-bottom:1px solid var(--line);}
+  .eyebrow{color:var(--accent-dim);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:18px;}
+  .eyebrow::before{content:"# ";color:var(--accent);}
+  h1{
+    font-size:clamp(30px,5vw,46px);
+    line-height:1.15;
+    font-weight:800;
+    color:var(--text);
+    margin-bottom:18px;
+    max-width:14ch;
+  }
+  h1 .hl{color:var(--accent);}
+  .sub{color:var(--text-dim);max-width:56ch;font-size:15px;margin-bottom:28px;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:40px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 18px;border-radius:2px;font-size:13.5px;font-weight:600;
+    border:1px solid var(--line);
+  }
+  .btn-primary{background:var(--accent);color:#0d0f0d;border-color:var(--accent);}
+  .btn-primary:hover{background:#93e082;text-decoration:none;}
+  .btn-ghost{color:var(--text);}
+  .btn-ghost:hover{border-color:var(--accent-dim);text-decoration:none;}
+
+  /* terminal / thread preview - signature element */
+  .term{
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .term-head{
+    display:flex;align-items:center;gap:8px;
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    font-size:12px;color:var(--text-dim);
+  }
+  .dot{width:9px;height:9px;border-radius:50%;background:#3a3f37;}
+  .term-title{margin-left:6px;}
+  .term-body{padding:16px 18px;font-size:13px;}
+  .thread-row{
+    display:grid;grid-template-columns:22px 1fr auto;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--line);
+    align-items:baseline;
+  }
+  .thread-row:last-child{border-bottom:none;}
+  .thread-tag{color:var(--amber);}
+  .thread-title{color:var(--text);}
+  .thread-title .board{color:var(--text-dim);}
+  .thread-meta{color:var(--text-dim);font-size:12px;white-space:nowrap;}
+  .prompt{color:var(--accent);}
+  .type-line{color:var(--text-dim);margin-top:12px;font-size:12.5px;}
+  .type-line .caret{display:inline-block;width:7px;height:12px;background:var(--accent);margin-left:2px;animation:blink 1s steps(1) infinite;}
+
+  /* section label */
+  .seclabel{color:var(--text-dim);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
+  .seclabel::before{content:"// ";color:var(--accent-dim);}
+  section{padding:56px 0;border-bottom:1px solid var(--line);}
+  h2{font-size:26px;font-weight:800;margin-bottom:30px;max-width:22ch;}
+
+  /* boards grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  @media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--bg);padding:22px 20px;}
+  .card .ic{font-size:20px;margin-bottom:12px;display:block;}
+  .card h3{font-size:14.5px;font-weight:700;margin-bottom:8px;color:var(--text);}
+  .card p{font-size:13px;color:var(--text-dim);}
+
+  /* quick start */
+  .steps{counter-reset:s;}
+  .step{
+    display:grid;grid-template-columns:auto 1fr;gap:14px;
+    padding:16px 0;border-bottom:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:none;}
+  .step .num{color:var(--accent-dim);font-size:13px;padding-top:2px;}
+  .step code{
+    display:block;background:var(--bg-raised);border:1px solid var(--line);
+    padding:10px 14px;border-radius:3px;font-size:13px;color:var(--accent);
+    overflow-x:auto;white-space:pre;
+  }
+  .step .desc{color:var(--text-dim);font-size:12.5px;margin-bottom:8px;}
+
+  footer{padding:36px 0 48px;font-size:12.5px;color:var(--text-dim);}
+  footer .flinks{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:14px;}
+  footer .flinks a{color:var(--text-dim);}
+  footer .flinks a:hover{color:var(--accent);}
+
+  @media (prefers-reduced-motion:reduce){
+    .cursor,.caret{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">ray#chad<span style="color:var(--text-dim)">/forum</span><span class="cursor"></span></div>
+    <div class="navlinks">
+      <a href="#boards">Boards</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Forum · Open Source · Self-Hosted</div>
+    <h1>The threads your <span class="hl">#channels</span> forget by morning.</h1>
+    <p class="sub">Ray Chad Forum is the async companion to Ray Chad IRC. Same server, same account — but for the conversations that need more than a scroll-back buffer.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#install">Get Started</a>
+      <a class="btn btn-ghost" href="https://github.com/newssungoldentoday-dev/raychd-forum">View on GitHub →</a>
+    </div>
+
+    <div class="term">
+      <div class="term-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="term-title">raychd-forum — #general / recent threads</span>
+      </div>
+      <div class="term-body">
+        <div class="thread-row">
+          <span class="thread-tag">●</span>
+          <span class="thread-title">Migrating from #general logs to threads <span class="board">· meta</span></span>
+          <span class="thread-meta">alice · 12 replies</span>
+        </div>
+        <div class="thread-row">
+          <span class="thread-tag">●</span>
+          <span class="thread-title">InspIRCd module for auto-linking threads <span class="board">· dev</span></span>
+          <span class="thread-meta">bob · 4 replies</span>
+        </div>
+        <div class="thread-row">
+          <span class="thread-tag">○</span>
+          <span class="thread-title">Docker Compose for forum + raychd together <span class="board">· install</span></span>
+          <span class="thread-meta">you · 0 replies</span>
+        </div>
+        <div class="type-line"><span class="prompt">$</span> raychd-forum new --board install "Docker Compose for forum + raychd together"<span class="caret"></span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="boards">
+  <div class="wrap">
+    <div class="seclabel">boards</div>
+    <h2>Everything a channel log can't hold.</h2>
+    <div class="grid">
+      <div class="card"><span class="ic">🧵</span><h3>Threaded, Not Scrolling</h3><p>Replies nest under a subject instead of vanishing into scrollback. Come back in a week, the context is still there.</p></div>
+      <div class="card"><span class="ic">🪪</span><h3>One Account, Both Apps</h3><p>Log in with the same identity you use on Ray Chad IRC. No second registration, no separate password.</p></div>
+      <div class="card"><span class="ic">🐳</span><h3>Docker Ready</h3><p>Ships with its own docker-compose.yml, or bolt it onto an existing raychd stack with one service block.</p></div>
+      <div class="card"><span class="ic">🔒</span><h3>Self-Hosted</h3><p>Your database, your backups, your moderation rules. Nothing phones home.</p></div>
+      <div class="card"><span class="ic">📜</span><h3>Open Source</h3><p>Apache-2.0, same as raychd. Fork it, re-skin it, run it for one channel or fifty.</p></div>
+      <div class="card"><span class="ic">🔗</span><h3>IRC Bridge Bot</h3><p>Optional bot posts new thread titles into your IRC channels — the forum surfaces itself where people already are.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <div class="seclabel">quick start</div>
+    <h2>Up in 3 commands.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <div>
+          <div class="desc"># Clone the repo</div>
+          <code>git clone https://github.com/newssungoldentoday-dev/raychd-forum.git</code>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <div>
+          <div class="desc"># Start with Docker</div>
+          <code>cd raychd-forum && docker-compose up -d</code>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <div>
+          <div class="desc"># Or install manually</div>
+          <code>bash pkg-install</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ray#chad/forum — Threaded Discussion © 2026 BlueBixt Developers
+    <div class="flinks">
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum">GitHub</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/LICENSE">Apache-2.0</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/CONTRIBUTING.md">Contributing</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/INSTALL.md">Read INSTALL.md</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/GETTING_STARTED.md">Read Getting Started</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/privacy-policy.md">Privacy Policy</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/term-of-use.md">Term Of Use</a> ·
+      <a href="https://github.com/newssungoldentoday-dev/raychd-forum/blob/main/term-of-service.md">Term Of Service</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+  </html>
+        
