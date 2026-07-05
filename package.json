@@ -1,0 +1,16 @@
+{
+  "name": "raychd-forum",
+  "version": "1.0.0",
+  "description": "IRC Chat Forum for BlueBixt",
+  "main": "index.html",
+  "scripts": {
+    "start": "node script.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BlueBixt Developers",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
+  
