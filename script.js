@@ -49,8 +49,7 @@
       }
     }
     type();
-  }
-const prefersReducedMotion = typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+    ();
   
   /* ---------------------------------------------------------
      2. Thread rows: simulate "new" activity ticking in
